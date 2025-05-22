@@ -4,19 +4,22 @@ import { ActivityIndicator, Button, StyleSheet, Text, View, Alert, FlatList, Tou
 
 // Import direct depuis la racine du json
 import groupesData from '@/data.json';
-
-
-
+  
 // je viens de faire un commit pour le fichier data.json
-const HomeScreen: React.FC = ({ navigation }: any) => {
-  
-  
-  interface Groupe {
+interface Groupe {
   id: number;
   nom: string;
   depense_attente: number;
 }
 
+interface AssociationUtilisateurGroupe {
+  id_utilisateur: number;
+  id_groupe: number;
+}
+
+const HomeScreen: React.FC = ({ navigation, route }: any) => {
+  // Récupérer l'id utilisateur depuis les params de navigation
+  const userId = route?.params?.userId;
 
   const [groupes, setGroupes] = useState<Groupe[]>([]);
   //pour gerer le chargement
@@ -24,8 +27,26 @@ const HomeScreen: React.FC = ({ navigation }: any) => {
 
   //pour gerer les erreurs
   const [error, setError] = useState<string | null>(null);
-  
 
+  // on vas chercher les groupes
+  useEffect(() => {
+    try {
+      // Récupérer les associations utilisateur-groupe
+      const associations: AssociationUtilisateurGroupe[] = groupesData.associations_utilisateur_groupe;
+      // Trouver les id_groupe associés à l'utilisateur courant
+      const groupesIds = associations
+        .filter(a => a.id_utilisateur === userId)
+        .map(a => a.id_groupe);
+      // Filtrer les groupes à afficher
+      const groupesFiltres = groupesData.groupes.filter((g: Groupe) => groupesIds.includes(g.id));
+      setGroupes(groupesFiltres);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [userId]);
+  
 
   // on vas chercher les groupes
   useEffect(() => {
