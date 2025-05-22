@@ -4,7 +4,7 @@ import data from '../../assets/data.json';
 
 export default function GroupPage() {
     // On récupère les infos sur le groupe depuis le fichier data.json
-    const groupeId = 1;
+    const groupeId = 1; // On récupère l'id du groupe cliqué par l'utilisateur sur la page des Groupes
     const groupe = data.groupes.find(g => g.id === groupeId);
 
     // On récupère les infos sur les membres du groupe
