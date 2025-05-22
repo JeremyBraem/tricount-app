@@ -1,0 +1,109 @@
+{
+  "utilisateurs": [
+    {
+      "id": 1,
+      "nom": "Dupont",
+      "prenom": "Jean",
+      "pseudo": "jean_dupont",
+      "mdp": "motdepasse123"
+    },
+    {
+      "id": 2,
+      "nom": "Martin",
+      "prenom": "Marie",
+      "pseudo": "marie_martin",
+      "mdp": "password456"
+    },
+    {
+      "id": 3,
+      "nom": "Bernard",
+      "prenom": "Paul",
+      "pseudo": "paul_bernard",
+      "mdp": "secret789"
+    },
+    {
+      "id": 4,
+      "nom": "Petit",
+      "prenom": "Sophie",
+      "pseudo": "sophie_petit",
+      "mdp": "azerty123"
+    }
+  ],
+  "groupes": [
+    {
+      "id": 1,
+      "nom": "Vacances été 2024",
+      "depense_attente": 520.50
+    },
+    {
+      "id": 2,
+      "nom": "Colocation",
+      "depense_attente": 1200.00
+    },
+    {
+      "id": 3,
+      "nom": "Weekend ski",
+      "depense_attente": 180.00
+    }
+  ],
+  "depenses": [
+    {
+      "id": 1,
+      "titre": "Réservation hotel",
+      "montant_attente": 400.00,
+      "montant_total": 800,
+      "date_entre": "2024-07-15",
+      "montant_individuel": false,
+      "id_groupe": 1,
+      "id_utilisateur": 1
+    },
+    {
+      "id": 2,
+      "titre": "Courses alimentaires",
+      "montant_attente": 120.50,
+      "montant_total": 241,
+      "date_entre": "2024-07-20",
+      "montant_individuel": true,
+      "id_groupe": 1,
+      "id_utilisateur": 2
+    },
+    {
+      "id": 3,
+      "titre": "Loyer mensuel",
+      "montant_attente": 1200.00,
+      "montant_total": 1200,
+      "date_entre": "2024-08-01",
+      "montant_individuel": false,
+      "id_groupe": 2,
+      "id_utilisateur": 3
+    },
+    {
+      "id": 4,
+      "titre": "Forfait ski",
+      "montant_attente": 180.00,
+      "montant_total": 180,
+      "date_entre": "2024-12-10",
+      "montant_individuel": true,
+      "id_groupe": 3,
+      "id_utilisateur": 4
+    }
+  ],
+  "associations_utilisateur_groupe": [
+    {
+      "id_utilisateur": 2,
+      "id_groupe": 1
+    },
+    {
+      "id_utilisateur": 3,
+      "id_groupe": 1
+    },
+    {
+      "id_utilisateur": 1,
+      "id_groupe": 2
+    },
+    {
+      "id_utilisateur": 2,
+      "id_groupe": 3
+    }
+  ]
+}
