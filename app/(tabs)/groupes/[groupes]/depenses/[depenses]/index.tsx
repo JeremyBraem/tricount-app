@@ -1,11 +1,7 @@
 import data from '@/data.json';
-import { useLocalSearchParams } from 'expo-router/build/hooks';
 import { StyleSheet, Text, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 
-const { groupes, depenses } = useLocalSearchParams();
-
-console.log(depenses)
 const utilisateurs = data.utilisateurs;
 // const groupes = data.groupes;
 const data_depenses = data.depenses;
