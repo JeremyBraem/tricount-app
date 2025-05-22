@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import data from '../../assets/data.json';
 
@@ -8,26 +8,65 @@ export default function GroupPage() {
     const groupe = data.groupes.find(g => g.id === groupeId);
 
     // On récupère les infos sur les membres du groupe
-    const membres = data.associations_utilisateur_groupe
-        .filter(assoc => assoc.id_groupe === groupeId)
-        .map(assoc => {
-            return data.utilisateurs.find(u => u.id === assoc.id_utilisateur);
-        })
-        .filter(Boolean); // enlève les valeurs nulles
+    const [membres, setMembres] = useState(
+        data.associations_utilisateur_groupe
+            .filter(assoc => assoc.id_groupe === groupeId)
+            .map(assoc => data.utilisateurs.find(u => u.id === assoc.id_utilisateur))
+            .filter(Boolean)
+    );
     
     // On récupère les infos sur les dépenses associées au groupe
-    const depenses = data.depenses.filter(d => d.id_groupe === groupeId);    
+    const [depenses, setDepenses] = useState(
+        data.depenses.filter(d => d.id_groupe === groupeId)
+    ); 
+
+    // Liste des utilisateurs non membres du groupe
+    const utilisateursNonMembres = data.utilisateurs.filter(
+        u => !membres.find(m => m?.id === u.id)
+    );
+
+    // Affichage de la liste des non membres
+    const [showUserList, setShowUserList] = useState(false);
 
     // On paramètre les actions des boutons
-    const handleAddUser = () => console.log('Ajouter utilisateur');
-    const handleDeleteUser = (id: number) => console.log('Supprimer utilisateur', id);
-    const handleAddDepense = () => console.log('Ajouter dépense');
-    const handleEditDepense = (id: number) => console.log('Modifier dépense', id);
-    const handleDeleteDepense = (id: number) => console.log('Supprimer dépense', id);
+    const handleAddUser = (id: number) => {
+        const utilisateurAjoute = data.utilisateurs.find(u => u.id === id);
+        if (!utilisateurAjoute) return;
+        setMembres([...membres, utilisateurAjoute]);
+        setShowUserList(false);
+    };
+
+    const handleDeleteUser = (id: number) => {
+        setMembres(membres.filter(m => m?.id !== id));
+    };
+
+    const handleAddDepense = () => {
+        const nouvelleDepense = {
+            id: depenses.length + 1,
+            titre: 'Nouvelle dépense',
+            montant_attente: 100,
+            montant_total: 100,
+            date_entre: new Date().toISOString().slice(0, 10),
+            montant_individuel: false,
+            id_groupe: groupeId,
+            id_utilisateur: membres[0]?.id || 1
+        };
+        setDepenses([...depenses, nouvelleDepense]);
+    };
+
+    const handleEditDepense = (id: number) => {
+        setDepenses(depenses.map(d => 
+            d.id === id ? { ...d, titre: d.titre + " (modifié)" } : d
+        ));
+    };
+
+    const handleDeleteDepense = (id: number) => {
+        setDepenses(depenses.filter(d => d.id !== id));
+    };
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title1}>{groupe.nom}</Text>
+            <Text style={styles.title1}>{groupe?.nom}</Text>
 
             {/* Gestion des membres du groupe */}
             <Text style={styles.title2}>Membres du groupe</Text>
@@ -36,16 +75,35 @@ export default function GroupPage() {
                 keyExtractor={(item) => item!.id.toString()}
                 renderItem={({ item }) => (
                     <View style={styles.row}>
-                        <Text>{item.pseudo}</Text>
+                        <Text>{item?.pseudo}</Text>
                         <TouchableOpacity onPress={() => handleDeleteUser(item!.id)}>
                             <Text style={styles.delete}>❌</Text>
                         </TouchableOpacity>
                     </View>
                 )}
-            />    
-            <TouchableOpacity style={styles.button} onPress={handleAddUser}>
-                <Text style={styles.buttonText}>Ajouter un utilisateur</Text>
+            />
+            {/* Ajout d'un utilisateur au groupe */}            
+            <TouchableOpacity style={styles.button} onPress={() => setShowUserList(!showUserList)}>
+                <Text style={styles.buttonText}>Ajouter un utilisateur au groupe</Text>
             </TouchableOpacity>
+
+            {showUserList && (
+                utilisateursNonMembres.length === 0 ? (
+                    <Text style={{ fontStyle: 'italic' }}>Tous les utilisateurs sont déjà membres.</Text>
+                ) : (
+                    utilisateursNonMembres.map(user => (
+                        <TouchableOpacity
+                            key={user.id}
+                            style={styles.button}
+                            onPress={() => handleAddUser(user.id)}
+                        >
+                            <Text style={styles.buttonText}>
+                                {user.prenom} {user.nom} ({user.pseudo})
+                            </Text>
+                        </TouchableOpacity>
+                    ))
+                )
+            )}
 
             {/* Gestion des dépenses du groupe */}
             <Text style={styles.title2}>Dépenses du groupe</Text>            
