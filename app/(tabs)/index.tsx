@@ -1,12 +1,41 @@
 import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, StyleSheet, TextInput } from 'react-native';
 
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useEffect, useState } from 'react';
 
 export default function HomeScreen() {
+  const [input, setInput] = useState('');
+
+  // Charger la valeur depuis AsyncStorage au démarrage
+  useEffect(() => {
+    loadInputValue();
+  }, []);
+
+  const loadInputValue = async () => {
+    try {
+      const savedValue = await AsyncStorage.getItem('userInput');
+      if (savedValue !== null) {
+        setInput(savedValue);
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement:', error);
+    }
+  };
+
+  const saveInputValue = async (value: string) => {
+    try {
+      await AsyncStorage.setItem('userInput', value);
+      setInput(value);
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde:', error);
+    }
+  };
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -20,6 +49,18 @@ export default function HomeScreen() {
         <ThemedText type="title">Welcome!</ThemedText>
         <HelloWave />
       </ThemedView>
+
+      <ThemedView style={styles.inputContainer}>
+        <ThemedText type="subtitle">Saisir votre texte :</ThemedText>
+        <TextInput 
+          value={input}
+          onChangeText={saveInputValue}
+          placeholder="Tapez votre texte ici..."
+          style={styles.textInput}
+          multiline={true}
+        />
+      </ThemedView>
+
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Step 1: Try it</ThemedText>
         <ThemedText>
@@ -60,6 +101,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+  },
+  inputContainer: {
+    gap: 8,
+    marginBottom: 16,
+  },
+  textInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 12,
+    minHeight: 40,
+    backgroundColor: '#fff',
+    fontSize: 16,
   },
   stepContainer: {
     gap: 8,
