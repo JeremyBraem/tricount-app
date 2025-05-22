@@ -1,65 +1,154 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Button, StyleSheet, Text, View, Alert, FlatList, TouchableOpacity } from 'react-native';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
 
-export default function HomeScreen() {
+// Import direct depuis la racine du json
+import groupesData from '@/data.json';
+
+
+
+// je viens de faire un commit pour le fichier data.json
+const HomeScreen: React.FC = ({ navigation }: any) => {
+  
+  
+  interface Groupe {
+  id: number;
+  nom: string;
+  depense_attente: number;
+}
+
+
+  const [groupes, setGroupes] = useState<Groupe[]>([]);
+  //pour gerer le chargement
+  const [loading, setLoading] = useState(true);
+
+  //pour gerer les erreurs
+  const [error, setError] = useState<string | null>(null);
+  
+
+
+  // on vas chercher les groupes
+  useEffect(() => {
+    try {
+      setGroupes(groupesData.groupes);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Fonction pour gérer la sélection d'un groupe
+  const handleGroupSelect = (groupId: number) => {
+    navigation.navigate('GroupDetails', { groupId });
+  };
+
+  // Fonction pour créer un groupe
+  const handleCreateGroup = () => {
+    navigation.navigate('CreateGroup');
+  };
+
+  // Fonction pour supprimer un groupe
+  const handleDeleteGroup = (groupId: number) => {
+    /// petit msg de confirmation de supprimer 
+    Alert.alert(
+      'Supprimer le groupe',
+      'Voulez-vous vraiment supprimer ce groupe ?',
+      [
+        { text: 'Annuler', style: 'cancel' },
+        {
+          text: 'Supprimer',
+          onPress: () => {
+            setGroupes(prev => prev.filter(g => g.id !== groupId));  // cliquer sur supprimer lance la fonction
+                                                                    // qui vient virer lex groupe
+            
+          },
+        },
+      ]
+    );
+  };
+
+
+//au cas ou il a du chargement
+  if (loading) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
+  }
+
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>Erreur : {error}</Text>
+      </View>
+    );
+  }
+
+  // mon affichage
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
+  <View style={styles.container}>
+    <View style={styles.titleContainer}>
+    <Text style={styles.title}>Mes Groupes</Text>
+    </View>
+
+  {/* pour afficher la liste de groupe */}
+  <FlatList
+    data={groupes}
+    keyExtractor={(item) => item.id.toString()}
+    renderItem={({ item }) => (
+      <View style={styles.groupItem}>
+        <TouchableOpacity onPress={() => handleGroupSelect(item.id)}>
+          <Text style={styles.groupName}>{item.nom}</Text>
+          {/* chaque groupe de ma liste possed un bouton supprimer */}
+        </TouchableOpacity>
+        <Button 
+          title="Supprimer"
+          onPress={() => handleDeleteGroup(item.id)}
         />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+      </View>
+    )}
+    />
+  {/* le bouton qui vas gere la creation de groupe */}
+  <Button title="Créer un groupe" onPress={handleCreateGroup} />
+</View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 10,
+    backgroundColor: '#fff',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 16,
+  },
   titleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 16,
+  },
+  groupItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 12,
+    marginBottom: 8,
+    backgroundColor: '#f2f2f2',
+    borderRadius: 8,
+  },
+  groupName: {
+    fontSize: 18,
+    fontWeight: '500',
   },
   stepContainer: {
     gap: 8,
@@ -73,3 +162,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
 });
+
+// Exporter HomeScreen
+export default HomeScreen;
