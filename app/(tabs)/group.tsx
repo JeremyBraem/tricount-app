@@ -67,7 +67,7 @@ export default function GroupPage() {
     return (
         <View style={styles.container}>
             <Text style={styles.title1}>{groupe?.nom}</Text>
-
+  
             {/* Gestion des membres du groupe */}
             <Text style={styles.title2}>Membres du groupe</Text>
             <FlatList
