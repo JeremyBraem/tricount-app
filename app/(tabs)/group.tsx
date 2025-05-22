@@ -75,7 +75,7 @@ export default function GroupPage() {
                 keyExtractor={(item) => item!.id.toString()}
                 renderItem={({ item }) => (
                     <View style={styles.row}>
-                        <Text>{item?.pseudo}</Text>
+                        <Text style={styles.membre}>{item?.pseudo}</Text>
                         <TouchableOpacity onPress={() => handleDeleteUser(item!.id)}>
                             <Text style={styles.delete}>❌</Text>
                         </TouchableOpacity>
@@ -138,11 +138,12 @@ export default function GroupPage() {
     )
 }
 const styles = StyleSheet.create({
-    container: { flex: 1, padding: 20, backgroundColor: '#fff' },
-    title1: { textAlign: 'center', fontSize: 24, fontWeight: 'bold', marginTop: 30, marginBottom: 10 },
-    title2: { fontSize: 18, fontWeight: 'bold', marginTop: 20, marginBottom: 10 },
-    row: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
-    depenseTitre: { fontSize: 14, fontWeight: 'bold' },
+    container: { flex: 1, padding: 20 },
+    title1: { color: 'white', textAlign: 'center', fontSize: 24, fontWeight: 'bold', marginTop: 30, marginBottom: 10 },
+    title2: { color: 'white', fontSize: 18, fontWeight: 'bold', marginTop: 20, marginBottom: 10 },
+    row: { color: 'white', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
+    membre: { color: 'white' },
+    depenseTitre: { color: 'white', fontSize: 14, fontWeight: 'bold' },
     depenseAuteur: { fontSize: 12, color: 'gray' },
     actions: { flexDirection: 'row', gap: 10 },
     button: { backgroundColor: '#007bff', padding: 10, borderRadius: 5, marginTop: 10 },
