@@ -20,8 +20,6 @@ interface AssociationUtilisateurGroupe {
 // je vais chercher le token de l'utilisateur
 
 
-
-
 const HomeScreen: React.FC = ({ navigation, route }: any) => {
 
   const [userId, setUserId] = useState<number | null>(null);
@@ -65,6 +63,7 @@ const HomeScreen: React.FC = ({ navigation, route }: any) => {
   // Fonction pour gérer la sélection d'un groupe
   const handleGroupSelect = (groupId: number) => {
     navigation.navigate('GroupDetails', { groupId });
+
   };
 
   // Fonction pour créer un groupe
@@ -91,6 +90,8 @@ const HomeScreen: React.FC = ({ navigation, route }: any) => {
       ]
     );
   };
+
+  
 
 
 //au cas ou il a du chargement
