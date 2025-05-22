@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Button, StyleSheet, Text, View, Alert, FlatList, TouchableOpacity } from 'react-native';
-
+import * as SecureStore from 'expo-secure-store';
 
 // Import direct depuis la racine du json
 import groupesData from '@/data.json';
@@ -16,15 +16,29 @@ interface AssociationUtilisateurGroupe {
   id_utilisateur: number;
   id_groupe: number;
 }
+// l'utilisateur
+// je vais chercher le token de l'utilisateur
+
+
+
 
 const HomeScreen: React.FC = ({ navigation, route }: any) => {
-  // Récupérer l'id utilisateur depuis les params de navigation
-  const userId = route?.params?.userId;
 
+  const [userId, setUserId] = useState<number | null>(null);
+
+  useEffect(() => {
+  const fetchUserId = async () => {
+    const id = await SecureStore.getItemAsync('token');
+      setUserId(Number(id)); // à condition que le token soit un ID numérique
+    };
+
+    fetchUserId();
+  }, []);
+
+  // Initialiser l'état pour les groupes
   const [groupes, setGroupes] = useState<Groupe[]>([]);
   //pour gerer le chargement
   const [loading, setLoading] = useState(true);
-
   //pour gerer les erreurs
   const [error, setError] = useState<string | null>(null);
 
@@ -47,17 +61,6 @@ const HomeScreen: React.FC = ({ navigation, route }: any) => {
     }
   }, [userId]);
   
-
-  // on vas chercher les groupes
-  useEffect(() => {
-    try {
-      setGroupes(groupesData.groupes);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
 
   // Fonction pour gérer la sélection d'un groupe
   const handleGroupSelect = (groupId: number) => {
